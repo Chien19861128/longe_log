@@ -1,0 +1,13 @@
+extends layout
+
+block content
+    form(name="test_post", action="/log/test_post", method="post")
+        .form-group
+            .row
+                input.form-control(type="text", name="uid", placeholder="uid", value="")
+                input.form-control(type="text", name="game_id", placeholder="game_id", value="")
+                input.form-control(type="text", name="server_id", placeholder="server_id", value="")
+                input.form-control(type="text", name="hash", placeholder="token", value="")
+                input.form-control(type="text", name="field1", placeholder="field1", value="")
+                input.form-control(type="text", name="field2", placeholder="field2", value="")
+            button.btn.btn-sm.btn-primary(type="submit", value="go") Save changes

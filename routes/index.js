@@ -32,6 +32,15 @@ router.post('/log/:collection', function(req, res, next) {
                     if (err) res.json({ result: 0,  message: err });
                     else res.json({ result: 1,  message: 'Success.' });
                 });
+                
+                var now = new Date();
+                
+                users.update(
+                    user._id,
+                    { $set: { latest_update_time : now }},
+                    function (err) {
+                        if(err) return done(err);
+                });
             } else {
                 res.json({ result: 0,  message: 'Bad token.' });
             }

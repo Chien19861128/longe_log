@@ -79,8 +79,8 @@ router.post('/simplelog/:collection', function(req, res, next) {
     
     collection = db.get(req.params.collection);
     
-    if (req.body.device_id && req.body.seq) {
-        collection.findOne({device_id : req.body.device_id}, {sort: {$natural:-1}}, function (err, last_entry) {
+    if (req.body.device_id && req.body.seq && req.body.game_id) {
+        collection.findOne({device_id : req.body.device_id, game_id : req.body.game_id}, {sort: {$natural:-1}}, function (err, last_entry) {
             if (err) res.json({ result: 0,  message: err });
             if (!last_entry || last_entry.seq!=req.body.seq) {
                 
@@ -95,6 +95,8 @@ router.post('/simplelog/:collection', function(req, res, next) {
                 res.json({ result: 0,  message: 'Bad token.' });
             }
         });
+    } else {
+        res.json({ result: 0,  message: 'Missing Fields.' });
     }
 });
 

@@ -7,7 +7,14 @@ var http = require('http');
 
 var db = monk('127.0.0.1:27017/longe_log');
 
-/*router.get('/test_post', function(req, res, next) {
+/*router.get('/test_simplepost', function(req, res, next) {
+   
+	res.render('test_simplepost', { 
+        title: 'test_simplepost'
+	});
+});
+
+router.get('/test_post', function(req, res, next) {
    
 	res.render('test_post', { 
         title: 'test_post'
@@ -67,6 +74,30 @@ router.get('/test_batch_post', function(req, res, next) {
   req.end();
 });*/
 
+router.post('/simplelog/:collection', function(req, res, next) {
+    console.log(req.body);
+    
+    collection = db.get(req.params.collection);
+    
+    if (req.body.device_id && req.body.seq) {
+        collection.findOne({device_id : req.body.device_id}, {sort: {$natural:-1}}, function (err, last_entry) {
+            if (err) res.json({ result: 0,  message: err });
+            if (!last_entry || last_entry.seq!=req.body.seq) {
+                
+                var now = new Date();
+                if (!req.body.create_time) req.body.create_time = now;
+                
+                collection.insert(req.body, function (err, doc) {
+                    if (err) res.json({ result: 0,  message: err });
+                    else res.json({ result: 1,  message: 'Success.' });
+                });
+            } else {
+                res.json({ result: 0,  message: 'Bad token.' });
+            }
+        });
+    }
+});
+
 router.post('/log/:collection', function(req, res, next) {
     console.log(req.body);
     
@@ -82,10 +113,11 @@ router.post('/log/:collection', function(req, res, next) {
             var hash = crypto.createHash('md5').update(bunch).digest('hex');
         
             if (req.body.hash==hash) { 
+            
                 var now = new Date();
+                if (!req.body.create_time) req.body.create_time = now;
                 
                 collection = db.get(req.params.collection);
-                if (!req.body.create_time) req.body.create_time = now;
                 
                 collection.insert(req.body, function (err, doc) {
                     if (err) res.json({ result: 0,  message: err });

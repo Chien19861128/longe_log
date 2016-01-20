@@ -7,6 +7,7 @@ var http = require('http');
 
 var db = monk('127.0.0.1:27017/longe_log');
 
+/*
 router.get('/test_simplepost', function(req, res, next) {
    
 	res.render('test_simplepost', { 
@@ -73,6 +74,7 @@ router.get('/test_batch_post', function(req, res, next) {
   req.write(data);
   req.end();
 });
+*/
 
 router.post('/simplelog/:collection', function(req, res, next) {
     console.log(req.body);

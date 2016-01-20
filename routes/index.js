@@ -7,7 +7,7 @@ var http = require('http');
 
 var db = monk('127.0.0.1:27017/longe_log');
 
-/*router.get('/test_simplepost', function(req, res, next) {
+router.get('/test_simplepost', function(req, res, next) {
    
 	res.render('test_simplepost', { 
         title: 'test_simplepost'
@@ -72,7 +72,7 @@ router.get('/test_batch_post', function(req, res, next) {
   });
   req.write(data);
   req.end();
-});*/
+});
 
 router.post('/simplelog/:collection', function(req, res, next) {
     console.log(req.body);
@@ -84,7 +84,7 @@ router.post('/simplelog/:collection', function(req, res, next) {
             if (err) res.json({ result: 0,  message: err });
             if (!last_entry || last_entry.seq!=req.body.seq) {
                 
-                var now = new Date();
+                var now = Math.floor(new Date().getTime()/1000);
                 if (!req.body.create_time) req.body.create_time = now;
                 
                 collection.insert(req.body, function (err, doc) {
@@ -116,7 +116,7 @@ router.post('/log/:collection', function(req, res, next) {
         
             if (req.body.hash==hash) { 
             
-                var now = new Date();
+                var now = Math.floor(new Date().getTime()/1000);
                 if (!req.body.create_time) req.body.create_time = now;
                 
                 collection = db.get(req.params.collection);
@@ -155,7 +155,7 @@ router.post('/batchlog', function(req, res, next) {
         
             if (req.body.hash==hash) { 
                 
-                var now = new Date();
+                var now = Math.floor(new Date().getTime()/1000);
                 var parsed = qs.parse(req.body);
                 for (var i = 0, len = parsed.logs.length; i < len; i++) {
                     if (!parsed.logs[i]['collection'] || !parsed.logs[i]['data']) continue;

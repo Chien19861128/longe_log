@@ -7,7 +7,7 @@ var http = require('http');
 
 var db = monk('127.0.0.1:27017/longe_log');
 
-/*
+
 router.get('/test_simplepost', function(req, res, next) {
    
 	res.render('test_simplepost', { 
@@ -74,7 +74,7 @@ router.get('/test_batch_post', function(req, res, next) {
   req.write(data);
   req.end();
 });
-*/
+
 
 router.post('/simplelog/:collection', function(req, res, next) {
     console.log(req.body);
@@ -85,13 +85,17 @@ router.post('/simplelog/:collection', function(req, res, next) {
         collection.findOne({device_id : req.body.device_id, game_id : req.body.game_id}, {sort: {$natural:-1}}, function (err, last_entry) {
             if (err) res.json({ result: 0,  message: err });
             if (!last_entry || last_entry.seq!=req.body.seq) {
-                
-                var now = Math.floor(new Date().getTime()/1000);
-                if (!req.body.create_time) req.body.create_time = now;
-                
-                collection.insert(req.body, function (err, doc) {
-                    if (err) res.json({ result: 0,  message: err });
-                    else res.json({ result: 1,  message: 'Success.' });
+                users = db.get("users");
+                users.findOne({device_id : req.body.device_id, game_id : req.body.game_id}, {sort: {$natural:-1}}, function (err, is_login) {
+                    if (is_login) req.body.uid = is_login.uid;
+            
+                    var now = Math.floor(new Date().getTime()/1000);
+                    if (!req.body.create_time) req.body.create_time = now;
+                    
+                    collection.insert(req.body, function (err, doc) {
+                        if (err) res.json({ result: 0,  message: err });
+                        else res.json({ result: 1,  message: 'Success.' });
+                    });
                 });
             } else {
                 res.json({ result: 0,  message: 'Bad token.' });

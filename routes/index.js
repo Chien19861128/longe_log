@@ -104,6 +104,7 @@ router.post('/simplelog/:collection', function(req, res, next) {
     } else {
         res.json({ result: 0,  message: 'Missing Fields.' });
     }
+    res.set("Connection", "close");
 });
 
 router.post('/log/:collection', function(req, res, next) {
@@ -143,6 +144,7 @@ router.post('/log/:collection', function(req, res, next) {
             }
         }
     });
+    res.set("Connection", "close");
 });
 
 router.post('/batchlog', function(req, res, next) {
@@ -189,6 +191,7 @@ router.post('/batchlog', function(req, res, next) {
             }
         }
     });
+    res.set("Connection", "close");
 });
 
 module.exports = router;

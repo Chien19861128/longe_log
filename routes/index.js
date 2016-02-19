@@ -105,6 +105,7 @@ router.post('/simplelog/:collection', function(req, res, next) {
         res.json({ result: 0,  message: 'Missing Fields.' });
     }
     res.set("Connection", "close");
+    res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
 });
 
 router.post('/log/:collection', function(req, res, next) {
@@ -145,6 +146,7 @@ router.post('/log/:collection', function(req, res, next) {
         }
     });
     res.set("Connection", "close");
+    res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
 });
 
 router.post('/batchlog', function(req, res, next) {
@@ -192,6 +194,7 @@ router.post('/batchlog', function(req, res, next) {
         }
     });
     res.set("Connection", "close");
+    res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
 });
 
 module.exports = router;

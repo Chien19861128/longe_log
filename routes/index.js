@@ -104,8 +104,6 @@ router.post('/simplelog/:collection', function(req, res, next) {
     } else {
         res.json({ result: 0,  message: 'Missing Fields.' });
     }
-    res.set("Connection", "close");
-    res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
 });
 
 router.post('/log/:collection', function(req, res, next) {
@@ -145,8 +143,6 @@ router.post('/log/:collection', function(req, res, next) {
             }
         }
     });
-    res.set("Connection", "close");
-    res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
 });
 
 router.post('/batchlog', function(req, res, next) {
@@ -167,19 +163,21 @@ router.post('/batchlog', function(req, res, next) {
                 
                 var now = Math.floor(new Date().getTime()/1000);
                 var parsed = qs.parse(req.body);
-                for (var i = 0, len = parsed.logs.length; i < len; i++) {
-                    if (!parsed.logs[i]['collection'] || !parsed.logs[i]['data']) continue;
-                    collection = db.get(parsed.logs[i]['collection']);
-                    
-                    var insert_data = parsed.logs[i]['data'];
-                    insert_data['uid'] = req.body.uid;
-                    insert_data['game_id'] = req.body.game_id;
-                    if (!insert_data['create_time']) insert_data['create_time'] = now;
-                    
-                    collection.insert(insert_data, function (err, doc) {
-                        if (err) res.json({ result: 0,  message: err });
-                        else res.json({ result: 1,  message: 'Success.' });
-                    });
+                if (typeof parsed.logs !== 'undefined' && parsed.logs !== null){
+                    for (var i = 0, len = parsed.logs.length; i < len; i++) {
+                        if (!parsed.logs[i]['collection'] || !parsed.logs[i]['data']) continue;
+                        collection = db.get(parsed.logs[i]['collection']);
+                        
+                        var insert_data = parsed.logs[i]['data'];
+                        insert_data['uid'] = req.body.uid;
+                        insert_data['game_id'] = req.body.game_id;
+                        if (!insert_data['create_time']) insert_data['create_time'] = now;
+                        
+                        collection.insert(insert_data, function (err, doc) {
+                            if (err) res.json({ result: 0,  message: err });
+                            else res.json({ result: 1,  message: 'Success.' });
+                        });
+                    }
                 }
                 
                 users.update(
@@ -193,8 +191,6 @@ router.post('/batchlog', function(req, res, next) {
             }
         }
     });
-    res.set("Connection", "close");
-    res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
 });
 
 module.exports = router;

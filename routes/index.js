@@ -89,7 +89,8 @@ router.post('/simplelog/:collection', function(req, res, next) {
                 users.findOne({device_id : req.body.device_id, game_id : req.body.game_id}, {sort: {$natural:-1}}, function (err, is_login) {
                     for (var key in req.body) {
                         if (req.body.hasOwnProperty(key)) {
-                            if (/^[0-9]+$/.test(req.body[key])) req.body[key] = parseInt(req.body[key]);
+                            if (!isNaN(parseFloat(req.body[key])) && isFinite(req.body[key])) req.body[key] = parseFloat(req.body[key]);
+                            else if (/^[0-9]+$/.test(req.body[key])) req.body[key] = parseInt(req.body[key]);
                         }
                     }
                 
@@ -129,7 +130,8 @@ router.post('/log/:collection', function(req, res, next) {
             if (req.body.hash==hash) { 
                 for (var key in req.body) {
                     if (req.body.hasOwnProperty(key)) {
-                        if (/^[0-9]+$/.test(req.body[key])) req.body[key] = parseInt(req.body[key]);
+                        if (!isNaN(parseFloat(req.body[key])) && isFinite(req.body[key])) req.body[key] = parseFloat(req.body[key]);
+                        else if (/^[0-9]+$/.test(req.body[key])) req.body[key] = parseInt(req.body[key]);
                     }
                 }
             
@@ -183,7 +185,8 @@ router.post('/batchlog', function(req, res, next) {
                         
                         for (var key in insert_data) {
                             if (insert_data[key]) {
-                                if (/^[0-9]+$/.test(insert_data[key])) insert_data[key] = parseInt(insert_data[key]);
+                                if (!isNaN(parseFloat(insert_data[key])) && isFinite(insert_data[key])) insert_data[key] = parseFloat(insert_data[key]);
+                                else if (/^[0-9]+$/.test(insert_data[key])) insert_data[key] = parseInt(insert_data[key]);
                             }
                         }
                         

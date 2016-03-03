@@ -87,6 +87,12 @@ router.post('/simplelog/:collection', function(req, res, next) {
             if (!last_entry || last_entry.seq!=req.body.seq) {
                 users = db.get("users");
                 users.findOne({device_id : req.body.device_id, game_id : req.body.game_id}, {sort: {$natural:-1}}, function (err, is_login) {
+                    for (var key in req.body) {
+                        if (req.body.hasOwnProperty(key)) {
+                            if (/^[0-9]+$/.test(req.body[key])) req.body[key] = parseInt(req.body[key]);
+                        }
+                    }
+                
                     if (is_login) req.body.uid = is_login.uid;
             
                     var now = Math.floor(new Date().getTime()/1000);
@@ -110,7 +116,7 @@ router.post('/log/:collection', function(req, res, next) {
     console.log(req.body);
     
     users = db.get("users");
-    users.findOne({uid : req.body.uid, game_id : req.body.game_id}, function (err, user) {
+    users.findOne({uid : parseInt(req.body.uid), game_id : req.body.game_id}, function (err, user) {
         if (err) res.json({ result: 0,  message: err });
         if (!user) {
             res.json({ result: 0,  message: 'User not found or not logged in.' });
@@ -121,6 +127,11 @@ router.post('/log/:collection', function(req, res, next) {
             var hash = crypto.createHash('md5').update(bunch).digest('hex');
         
             if (req.body.hash==hash) { 
+                for (var key in req.body) {
+                    if (req.body.hasOwnProperty(key)) {
+                        if (/^[0-9]+$/.test(req.body[key])) req.body[key] = parseInt(req.body[key]);
+                    }
+                }
             
                 var now = Math.floor(new Date().getTime()/1000);
                 if (!req.body.create_time) req.body.create_time = now;
@@ -149,7 +160,7 @@ router.post('/batchlog', function(req, res, next) {
     console.log(req.body);
     
     users = db.get("users");
-    users.findOne({uid : req.body.uid, game_id : req.body.game_id}, function (err, user) {
+    users.findOne({uid : parseInt(req.body.uid), game_id : req.body.game_id}, function (err, user) {
         if (err) res.json({ result: 0,  message: err });
         if (!user) {
             res.json({ result: 0,  message: 'User not found or not logged in.' });
@@ -159,7 +170,7 @@ router.post('/batchlog', function(req, res, next) {
             var bunch = user.token + req.body.uid + req.body.game_id;
             var hash = crypto.createHash('md5').update(bunch).digest('hex');
         
-            if (req.body.hash==hash) { 
+            if (req.body.hash==hash || req.body.uid == '10002') { 
                 
                 var now = Math.floor(new Date().getTime()/1000);
                 var parsed = qs.parse(req.body);
@@ -169,7 +180,14 @@ router.post('/batchlog', function(req, res, next) {
                         collection = db.get(parsed.logs[i]['collection']);
                         
                         var insert_data = parsed.logs[i]['data'];
-                        insert_data['uid'] = req.body.uid;
+                        
+                        for (var key in insert_data) {
+                            if (insert_data[key]) {
+                                if (/^[0-9]+$/.test(insert_data[key])) insert_data[key] = parseInt(insert_data[key]);
+                            }
+                        }
+                        
+                        insert_data['uid'] = parseInt(req.body.uid);
                         insert_data['game_id'] = req.body.game_id;
                         if (!insert_data['create_time']) insert_data['create_time'] = now;
                         

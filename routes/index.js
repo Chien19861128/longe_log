@@ -9,9 +9,8 @@ var db = monk('127.0.0.1:27017/longe_log');
 
 router.get('/', function(req, res, next) {
    
-	res.render('', { 
-        title: ''
-	});
+  req.write('');
+  req.end();
 });
 
 router.get('/test_simplepost', function(req, res, next) {
